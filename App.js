@@ -1,7 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import TodoList from './components/TodoContainer';
+import TodoInput from './components/TodoInput';
 import {
   StyleSheet,
   Text,
@@ -13,49 +15,42 @@ import {
   SafeAreaView,
   Button,
 } from 'react-native';
+import WeekCalendar from './WeekCalendar';
+import Header from './components/Header';
+import { MONTH_ARRARY } from './constants/MonthArray';
 import { createStackNavigator } from '@react-navigation/stack';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import rootReducer from './store/store';
 
-function DetailsScreen({ navigation }) {
+const store = createStore(rootReducer);
+
+const App = () => {
+  const [date, setDate] = useState(new Date().getMonth());
+
+  console.log(store, 'Dd');
+  
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Details Screen</Text>
-      <Button
-        title='Go to Details'
-        onPress={() => navigation.push('Details')}
-      />
-      <Button title='Go back' onPress={() => navigation.goBack()} />
-      <Button
-        title='Go back to first screen in stack'
-        onPress={() => navigation.popToTop()}
-      />
-    </View>
+    <Provider store={store}>
+      <SafeAreaView style={styles.safe}>
+        <Header month={MONTH_ARRARY[date]} year={2020} />
+        <TodoList />
+        <TodoInput />
+        {/* <WeekCalendar date={date} onChange={(newDate) => setDate(newDate)} /> */}
+      </SafeAreaView>
+    </Provider>
   );
-}
+};
 
-function HomeScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-      <Button
-        title='Go to Details'
-        onPress={() => navigation.navigate('Details')}
-      />
-    </View>
-  );
-}
-
-const Stack = createStackNavigator();
-
-function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName='Home' options={{ title: 'Overview' }}>
-        <Stack.Screen name='Home' component={HomeScreen} />
-        <Stack.Screen name='Details' component={DetailsScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    paddingTop: 60,
+  },
+  container: {
+    flexDirection: 'row',
+  },
+});
 
 export default App;
 
